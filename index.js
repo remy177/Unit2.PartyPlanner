@@ -13,6 +13,10 @@ const $eventList = document.querySelector("#eventList");
 const $eventDetails = document.querySelector("#eventDetails");
 const $guests = document.querySelector("#guests");
 const $guestList = document.querySelector("#guestList");
+const $form = document.querySelector('form');
+const $input = document.querySelector('#eventName');
+const $addBtn = document.querySelector('#addBtn');
+//const $deleteBtn = document.querySelector('#deleteBtn');
 
 window.addEventListener("hashchange", selectEvent);
 
@@ -30,6 +34,18 @@ async function render() {
 
 render();
 
+function addEvent(e) {
+  e.preventDefault();
+  const name = $input.value;
+  if (!name) return;
+  console.log(name);
+  //numberBank.push(number);
+  $input.value = '';
+  render();
+}
+
+$form.addEventListener('submit', addEvent);
+
 /**
  * Show details about the currently selected event
  */
@@ -43,6 +59,7 @@ function selectEvent() {
  */
 function getEventFromHash() {
   // We need to slice the # off
+  console.log(window.location.hash);
   const id = window.location.hash.slice(1);
   state.event = state.events.find((event) => event.id === +id);
 }
@@ -52,6 +69,14 @@ function getEventFromHash() {
  */
 async function getGuests() {
   // TODO
+  try {
+    const response = await fetch(API + "/guests");
+    const json = await response.json();
+    state.guests = json.data;
+    console.log(state.guests);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 /**
@@ -61,7 +86,29 @@ function renderGuests() {
   $guests.hidden = false;
 
   // TODO: Render the list of guests for the currently selected event
-  $guestList.innerHTML = "<li>No guests yet!</li>";
+  // Get guests for the current party
+  const rsvps = state.rsvps.filter(
+    (rsvp) => rsvp.eventId === state.event.id
+  );
+  const guestIds = rsvps.map((rsvp) => rsvp.guestId);
+  const guests = state.guests.filter((guest) => guestIds.includes(guest.id));
+
+  if (!guests.length) {
+    $guestList.innerHTML = "<li>No guests yet!</li>";
+    return;
+  }
+
+  const guestList = guests.map((guest) => {
+    const guestInfo = document.createElement("li");
+    guestInfo.innerHTML = `
+      <span>${guest.name}</span>
+      <span>${guest.email}</span>
+      <span>${guest.phone}</span>
+    `;
+    return guestInfo;
+  });
+
+  $guestList.replaceChildren(...guestList);
 }
 
 // === No need to edit anything below this line! ===
