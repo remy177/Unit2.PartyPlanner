@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,20 +10,50 @@
     <link rel="stylesheet" href="index.css" />
     <script defer src="index.js"></script>
   </head>
+
   <body>
+
     <h1><a href="#">Event Planner</a></h1>
-    <form>
-      <div class="mb-3">
-      <label>
-        Add an event to the Planner
-        <input id="eventName" type="text" />
-        <input id="eventDesc" type="text" />
-        <input id="eventDate" type="date" />
-        <input id="eventLocation" type="text" />
-      </label>
-      <button id="addBtn" type="submit"  class="btn btn-primary">Add Event</button>
-    </div>
-    </form>
+
+    <section id="eventForm">
+      <div class="container">
+        <div class="title text-center">
+          <h4>Add an event to the Planner</h4>
+        </div>
+        <form>
+          <div class="row">
+            <div class="col-sm-2">
+              <div class="form-floating">
+                <input id="eventName" type="text" class="form-control" placeholder="Event Name">
+                <label for="eventName">Event Name</label>
+              </div>
+            </div>
+            <div class="col-sm">
+              <div class="form-floating">
+                <input id="eventDesc" type="text" class="form-control" placeholder="Event Description">
+                <label for="eventDesc">Event Description</label>
+              </div>
+            </div>
+            <div class="col-sm-2">
+              <div class="form-floating">
+                <input id="eventDate" type="date" class="form-control" placeholder="Event Date">
+                <label for="eventDate">Event Date</label>
+              </div>
+            </div>
+            <div class="col-sm">
+              <div class="form-floating">
+                <input type="text" class="form-control" id="eventLocation" placeholder="Event Location">
+                <label for="eventLocation">Event Location</label>
+              </div>
+            </div>
+          </div>
+          <br/> 
+          <button id="addBtn" type="submit"  class="btn btn-primary">Add Event</button>
+        </div>
+        </form>
+      </div>
+    </section>
+
     <main>
       <article id="events">
         <h2>Upcoming Events</h2>
@@ -37,5 +68,6 @@
         </section>
       </article>
     </main>
+    
   </body>
 </html>

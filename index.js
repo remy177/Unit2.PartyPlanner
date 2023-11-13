@@ -14,9 +14,12 @@ const $eventDetails = document.querySelector("#eventDetails");
 const $guests = document.querySelector("#guests");
 const $guestList = document.querySelector("#guestList");
 const $form = document.querySelector('form');
-const $input = document.querySelector('#eventName');
+const $name = document.querySelector('#eventName');
+const $desc = document.querySelector('#eventDesc');
+const $date = document.querySelector('#eventDate');
+const $location = document.querySelector('#eventLocation');
 const $addBtn = document.querySelector('#addBtn');
-//const $deleteBtn = document.querySelector('#deleteBtn');
+
 
 window.addEventListener("hashchange", selectEvent);
 
@@ -34,17 +37,59 @@ async function render() {
 
 render();
 
-function addEvent(e) {
+async function addEvent(e) {
+  // disable page refresh when form submit
   e.preventDefault();
-  const name = $input.value;
-  if (!name) return;
-  console.log(name);
-  //numberBank.push(number);
-  $input.value = '';
+  const name = $name.value;
+  const desc = $desc.value;
+  const date = $date.value;
+  const location = $location.value;
+  
+  // reset form and do nothing if not all info entered
+  if (!name || !desc || !date || !location) return;
+
+  // to-do: fetch post add event via api
+  try {
+    const response = await fetch(API + "/events", {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        name: name,
+        description: desc,
+        date: new Date(date),
+        location: location,
+      })
+    });
+    const json = await response.json();
+    console.log('event added... ' + json.data.name);
+  } catch (error) {
+    console.error(error);
+  }
+
+  // clear the value
+  $name.value = $desc.value = $date.value = $location.value = '';
+
+  // refresh page with new data
   render();
 }
 
 $form.addEventListener('submit', addEvent);
+
+async function deleteEvent(e) {
+  if (e.target.matches('button')) {
+    const id = e.target.dataset.id;
+    try {
+      const response = await fetch(`${API}/events/${id}`,{method: 'DELETE'});
+      console.log('event('+id+') deleted... status:' + response.status);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  // refresh page with new data
+  render();
+}
+
+$eventList.addEventListener('click', deleteEvent);
 
 /**
  * Show details about the currently selected event
@@ -59,7 +104,6 @@ function selectEvent() {
  */
 function getEventFromHash() {
   // We need to slice the # off
-  console.log(window.location.hash);
   const id = window.location.hash.slice(1);
   state.event = state.events.find((event) => event.id === +id);
 }
@@ -73,7 +117,6 @@ async function getGuests() {
     const response = await fetch(API + "/guests");
     const json = await response.json();
     state.guests = json.data;
-    console.log(state.guests);
   } catch (error) {
     console.error(error);
   }
@@ -156,9 +199,17 @@ function renderEvent(event) {
   const date = event.date.slice(0, 10);
 
   article.innerHTML = `
-    <h3><a href="#${event.id}">${event.name} #${event.id}</a></h3>
+    <section><h3><a href="#${event.id}">${event.name} #${event.id}</a></h3>
+    <div class="row">
+    <div class="col-sm-7">
     <time datetime="${date}">${date}</time>
     <address>${event.location}</address>
+    </div>
+    <div class="col-sm">
+    <button data-id="${event.id}"class="btn btn-light">Delete Event</button>
+    </div>
+    </div>
+    </section>
   `;
 
   return article;

@@ -9,6 +9,14 @@ body {
   height: 100vh;
 }
 
+section {
+  background-color: rgb(214, 238, 231);
+  border: 1px solid lightgrey;
+  padding: 8px;
+  margin: 8px;
+  border-radius: 15px;
+}
+
 main {
   display: flex;
   flex: 1;
